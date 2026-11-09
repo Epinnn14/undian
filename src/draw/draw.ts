@@ -78,5 +78,10 @@ export function verify(
   const recomputed = draw(input);
   const commitmentMatches = commitmentOf(input.seed) === input.commitment;
   const winnerMatches = recomputed.winner === input.claimedWinner;
-  return { commitmentMatches, winnerMatches, valid: commitmentMatches && winnerMatches, recomputed };
+  return {
+    commitmentMatches,
+    winnerMatches,
+    valid: commitmentMatches && winnerMatches,
+    recomputed,
+  };
 }

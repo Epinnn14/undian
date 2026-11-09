@@ -14,7 +14,11 @@ export function dueDate(start: string, frequency: Frequency, n: number): string 
 }
 
 /** Pot paid to a round's winner after the organiser's fee (rounded down to whole rupiah). */
-export function payout(contribution: number, members: number, adminFeePct: number): {
+export function payout(
+  contribution: number,
+  members: number,
+  adminFeePct: number,
+): {
   pot: number;
   fee: number;
   net: number;

@@ -1,7 +1,7 @@
 {
-  "name": "arisan",
-  "version": "0.1.0",
-  "description": "Arisan (rotating savings group) API with a verifiable commit-reveal draw \u2014 NestJS, Drizzle ORM, PGlite",
+  "name": "undian",
+  "version": "0.2.0",
+  "description": "Template for fair, verifiable draws (undian: doorprize, giveaway, raffle) with a commit-reveal scheme — NestJS, Drizzle ORM, PGlite",
   "scripts": {
     "build": "tsc -p tsconfig.build.json && node -e \"require('fs').cpSync('drizzle','dist/drizzle',{recursive:true})\"",
     "start": "node dist/main.js",

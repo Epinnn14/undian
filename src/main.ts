@@ -9,7 +9,7 @@ async function main() {
   const app = configure(await NestFactory.create(AppModule));
   const port = Number(process.env.PORT ?? 3000);
   await app.listen(port);
-  Logger.log(`Arisan API on http://localhost:${port} — docs at /docs`, 'Bootstrap');
+  Logger.log(`Undian API on http://localhost:${port} — docs at /docs`, 'Bootstrap');
 }
 
 void main();

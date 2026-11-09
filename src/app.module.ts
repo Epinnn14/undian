@@ -1,7 +1,7 @@
 import { Controller, Get, Module } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { DatabaseModule } from './db/database.module';
-import { GroupsModule } from './groups/groups.module';
+import { UndianModule } from './undian/undian.module';
 
 @ApiExcludeController()
 @Controller()
@@ -12,5 +12,5 @@ class HealthController {
   }
 }
 
-@Module({ imports: [DatabaseModule, GroupsModule], controllers: [HealthController] })
+@Module({ imports: [DatabaseModule, UndianModule], controllers: [HealthController] })
 export class AppModule {}

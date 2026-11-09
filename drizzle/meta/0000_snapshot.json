@@ -1,11 +1,11 @@
 {
-  "id": "ea6f226c-50e1-4ff3-9e47-c3c378fe861a",
+  "id": "35b1555e-82be-4345-a657-b66e8ed5e44d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.contributions": {
-      "name": "contributions",
+    "public.draws": {
+      "name": "draws",
       "schema": "",
       "columns": {
         "id": {
@@ -15,257 +15,23 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "round_id": {
-          "name": "round_id",
+        "undian_id": {
+          "name": "undian_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "member_id": {
-          "name": "member_id",
+        "prize_id": {
+          "name": "prize_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "amount": {
-          "name": "amount",
+        "slot": {
+          "name": "slot",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
-        },
-        "paid_at": {
-          "name": "paid_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "contributions_round_id_rounds_id_fk": {
-          "name": "contributions_round_id_rounds_id_fk",
-          "tableFrom": "contributions",
-          "tableTo": "rounds",
-          "columnsFrom": [
-            "round_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "contributions_member_id_members_id_fk": {
-          "name": "contributions_member_id_members_id_fk",
-          "tableFrom": "contributions",
-          "tableTo": "members",
-          "columnsFrom": [
-            "member_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "one_contribution_per_round": {
-          "name": "one_contribution_per_round",
-          "nullsNotDistinct": false,
-          "columns": [
-            "round_id",
-            "member_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.groups": {
-      "name": "groups",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "contribution": {
-          "name": "contribution",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "frequency": {
-          "name": "frequency",
-          "type": "frequency",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "admin_fee_pct": {
-          "name": "admin_fee_pct",
-          "type": "numeric(5, 2)",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "status": {
-          "name": "status",
-          "type": "group_status",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'open'"
-        },
-        "start_date": {
-          "name": "start_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {
-        "contribution_positive": {
-          "name": "contribution_positive",
-          "value": "\"groups\".\"contribution\" > 0"
-        },
-        "fee_range": {
-          "name": "fee_range",
-          "value": "\"groups\".\"admin_fee_pct\" >= 0 AND \"groups\".\"admin_fee_pct\" <= 20"
-        }
-      },
-      "isRLSEnabled": false
-    },
-    "public.members": {
-      "name": "members",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "group_id": {
-          "name": "group_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "phone": {
-          "name": "phone",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "''"
-        },
-        "joined_at": {
-          "name": "joined_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "members_group_id_groups_id_fk": {
-          "name": "members_group_id_groups_id_fk",
-          "tableFrom": "members",
-          "tableTo": "groups",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "member_name_per_group": {
-          "name": "member_name_per_group",
-          "nullsNotDistinct": false,
-          "columns": [
-            "group_id",
-            "name"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.rounds": {
-      "name": "rounds",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "group_id": {
-          "name": "group_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "number": {
-          "name": "number",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "due_date": {
-          "name": "due_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "status": {
-          "name": "status",
-          "type": "round_status",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'collecting'"
         },
         "commitment": {
           "name": "commitment",
@@ -285,21 +51,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "winner_id": {
-          "name": "winner_id",
+        "ticket_id": {
+          "name": "ticket_id",
           "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "payout": {
-          "name": "payout",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "fee": {
-          "name": "fee",
-          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -312,12 +66,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "rounds_group_id_groups_id_fk": {
-          "name": "rounds_group_id_groups_id_fk",
-          "tableFrom": "rounds",
-          "tableTo": "groups",
+        "draws_undian_id_undian_id_fk": {
+          "name": "draws_undian_id_undian_id_fk",
+          "tableFrom": "draws",
+          "tableTo": "undian",
           "columnsFrom": [
-            "group_id"
+            "undian_id"
           ],
           "columnsTo": [
             "id"
@@ -325,12 +79,25 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "rounds_winner_id_members_id_fk": {
-          "name": "rounds_winner_id_members_id_fk",
-          "tableFrom": "rounds",
-          "tableTo": "members",
+        "draws_prize_id_prizes_id_fk": {
+          "name": "draws_prize_id_prizes_id_fk",
+          "tableFrom": "draws",
+          "tableTo": "prizes",
           "columnsFrom": [
-            "winner_id"
+            "prize_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "draws_ticket_id_tickets_id_fk": {
+          "name": "draws_ticket_id_tickets_id_fk",
+          "tableFrom": "draws",
+          "tableTo": "tickets",
+          "columnsFrom": [
+            "ticket_id"
           ],
           "columnsTo": [
             "id"
@@ -341,44 +108,319 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "round_number_per_group": {
-          "name": "round_number_per_group",
+        "draw_slot_per_undian": {
+          "name": "draw_slot_per_undian",
           "nullsNotDistinct": false,
           "columns": [
-            "group_id",
-            "number"
+            "undian_id",
+            "slot"
+          ]
+        },
+        "ticket_wins_once": {
+          "name": "ticket_wins_once",
+          "nullsNotDistinct": false,
+          "columns": [
+            "ticket_id"
           ]
         }
       },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.participants": {
+      "name": "participants",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "undian_id": {
+          "name": "undian_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contact": {
+          "name": "contact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "participants_undian_id_undian_id_fk": {
+          "name": "participants_undian_id_undian_id_fk",
+          "tableFrom": "participants",
+          "tableTo": "undian",
+          "columnsFrom": [
+            "undian_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "participant_name_per_undian": {
+          "name": "participant_name_per_undian",
+          "nullsNotDistinct": false,
+          "columns": [
+            "undian_id",
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.prizes": {
+      "name": "prizes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "undian_id": {
+          "name": "undian_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "prizes_undian_id_undian_id_fk": {
+          "name": "prizes_undian_id_undian_id_fk",
+          "tableFrom": "prizes",
+          "tableTo": "undian",
+          "columnsFrom": [
+            "undian_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "prize_position_per_undian": {
+          "name": "prize_position_per_undian",
+          "nullsNotDistinct": false,
+          "columns": [
+            "undian_id",
+            "position"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "prize_quantity_positive": {
+          "name": "prize_quantity_positive",
+          "value": "\"prizes\".\"quantity\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.tickets": {
+      "name": "tickets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "undian_id": {
+          "name": "undian_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "participant_id": {
+          "name": "participant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tickets_undian_id_undian_id_fk": {
+          "name": "tickets_undian_id_undian_id_fk",
+          "tableFrom": "tickets",
+          "tableTo": "undian",
+          "columnsFrom": [
+            "undian_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tickets_participant_id_participants_id_fk": {
+          "name": "tickets_participant_id_participants_id_fk",
+          "tableFrom": "tickets",
+          "tableTo": "participants",
+          "columnsFrom": [
+            "participant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ticket_code_per_undian": {
+          "name": "ticket_code_per_undian",
+          "nullsNotDistinct": false,
+          "columns": [
+            "undian_id",
+            "code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.undian": {
+      "name": "undian",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "allow_multiple_wins": {
+          "name": "allow_multiple_wins",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "ticket_prefix": {
+          "name": "ticket_prefix",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'T'"
+        },
+        "status": {
+          "name": "status",
+          "type": "undian_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "locked_at": {
+          "name": "locked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
-    "public.frequency": {
-      "name": "frequency",
+    "public.undian_status": {
+      "name": "undian_status",
       "schema": "public",
       "values": [
-        "weekly",
-        "monthly"
-      ]
-    },
-    "public.group_status": {
-      "name": "group_status",
-      "schema": "public",
-      "values": [
-        "open",
-        "running",
+        "draft",
+        "locked",
         "finished"
-      ]
-    },
-    "public.round_status": {
-      "name": "round_status",
-      "schema": "public",
-      "values": [
-        "collecting",
-        "drawn"
       ]
     }
   },

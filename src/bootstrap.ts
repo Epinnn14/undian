@@ -4,12 +4,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 export function configure(app: INestApplication) {
   app.enableShutdownHooks();
   const config = new DocumentBuilder()
-    .setTitle('Arisan API')
+    .setTitle('Undian API')
     .setDescription(
-      'Rotating savings groups (arisan) with a verifiable commit–reveal draw. ' +
-        'Every round publishes sha256(seed) before anyone pays; the seed is revealed at the draw so the result can be recomputed by anyone.',
+      'A reusable template for fair draws — doorprize, giveaway, lucky draw, raffle. ' +
+        'Locking an undian publishes sha256(seed) for every prize slot; each seed is revealed when its slot is drawn, so anyone can recompute the winner.',
     )
-    .setVersion('0.1.0')
+    .setVersion('0.2.0')
     .build();
   SwaggerModule.setup('docs', app, () => SwaggerModule.createDocument(app, config));
   return app;

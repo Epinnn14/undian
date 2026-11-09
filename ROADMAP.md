@@ -1,21 +1,25 @@
 # Roadmap
 
 ## Next
-- [ ] **Auth & roles** — organiser vs. member tokens; members can only see their own groups.
-- [ ] **Late payments** — grace period, late fee (denda) and "talangan" (organiser covers, member repays).
-- [ ] **Swap / sell a slot** (*jual kocokan*) — a winner-to-be trades their turn, with both parties' consent.
-- [ ] **Fixed order arisan** (urutan tetap) as an alternative to random draws.
-- [ ] Public, read-only verification page (static HTML) that runs the check in the browser with WebCrypto.
+- [ ] **Public verification page** (static HTML) that recomputes a draw in the browser with WebCrypto,
+      fed by `results.csv`.
+- [ ] **Import participants from CSV** (name, contact, tickets) — events usually start from a spreadsheet.
+- [ ] **Organiser auth**: an API key per undian for the write endpoints; reading stays public.
+- [ ] **Redraw when a winner is absent** (*hangus*): mark a slot forfeited and draw a replacement slot
+      with its own commitment, keeping the original on record.
+- [ ] **Live screen** for the venue: big-number display that polls `/draws/:slot` (SSE).
 
 ## Later
-- [ ] Payment proof upload and organiser confirmation.
-- [ ] WhatsApp-ready reminder text before each due date.
-- [ ] Use a public randomness beacon (e.g. drand) as additional entropy.
+- [ ] Use a public randomness beacon (e.g. drand round) as additional entropy.
+- [ ] Prize stock with images and sponsor names.
 - [ ] Switch storage to a real Postgres via `DATABASE_URL` (Drizzle node-postgres driver) for multi-instance deploys.
 - [ ] Event log (append-only) for an auditable history of every action.
+- [ ] Arisan preset: recurring meetings with contributions, built on top of the same draw.
 
 ## Done
-- [x] Groups, members, weekly/monthly schedule with month-end handling
-- [x] Contributions, draw gated on full payment, automatic next round / finish
+- [x] Prizes with quantity and draw order; participants with multiple tickets and prefixed codes
+- [x] Lock publishes one commitment per draw slot; per-slot seeds revealed one by one
+- [x] One prize per person by default, `allowMultipleWins` for giveaways
+- [x] Results as JSON and CSV (with seeds and entropy), ticket lookup
 - [x] Commit–reveal draw with unbiased sampling and a verification endpoint
-- [x] Ledger, OpenAPI docs from Zod schemas, e2e tests on in-memory Postgres
+- [x] OpenAPI docs from Zod schemas, e2e tests on in-memory Postgres

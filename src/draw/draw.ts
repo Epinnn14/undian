@@ -1,19 +1,22 @@
 import { createHash, createHmac, randomBytes } from 'node:crypto';
 
 /**
- * Verifiable arisan draw (commit–reveal).
+ * Verifiable draw (commit–reveal), usable for any kind of undian: doorprize, giveaway,
+ * lucky draw, raffle, or picking the next arisan winner.
  *
- * 1. When a round opens, the server picks a secret `seed` and publishes only
- *    `commitment = sha256(seed)`. The seed can no longer be changed.
- * 2. At the draw, members supply `publicEntropy` (e.g. the numbers everybody shouted,
- *    or a lottery result) that the server could not know in advance.
- * 3. The winner is derived from HMAC-SHA256(seed, round | entropy | eligible ids).
- *    The seed is revealed, so anyone can recompute every step.
+ * 1. When registration closes, the server picks one secret `seed` per draw slot and publishes
+ *    only `commitment = sha256(seed)`. The seeds can no longer be changed.
+ * 2. At each draw, the audience supplies `publicEntropy` (numbers shouted in the room, the last
+ *    digits of a lottery result, a block hash…) that the server could not know in advance.
+ * 3. The winning ticket is derived from HMAC-SHA256(seed, version | slot | entropy | tickets).
+ *    The seed of that slot is revealed, so anyone can recompute every step.
  *
- * Neither side alone can steer the result: the server committed before seeing the
- * entropy, and the members don't know the seed.
+ * Neither side alone can steer the result: the server committed before seeing the entropy,
+ * and the audience doesn't know the seed. Each slot has its own seed, so revealing one draw
+ * tells nobody anything about the next.
  */
 
+export const DRAW_VERSION = 'undian-v1';
 export const SEED_BYTES = 32;
 
 export function newSeed(): string {
@@ -27,15 +30,16 @@ export function commitmentOf(seed: string): string {
 export interface DrawInput {
   seed: string;
   publicEntropy: string;
-  roundNumber: number;
-  /** ids of members who have not received the pot yet */
+  /** 1-based position of this draw within the event */
+  slot: number;
+  /** codes of the tickets that can still win — a participant with 3 tickets has 3 entries */
   eligible: readonly string[];
 }
 
 export interface DrawResult {
   winner: string;
   index: number;
-  /** eligible ids in canonical (sorted) order — the list `index` points into */
+  /** eligible codes in canonical (sorted) order — the list `index` points into */
   ordered: string[];
   message: string;
   digest: string;
@@ -44,14 +48,19 @@ export interface DrawResult {
 
 const TWO_64 = 1n << 64n;
 
+/** Canonical message that is fed to the HMAC; documented so it can be rebuilt by hand. */
+export function drawMessage(slot: number, publicEntropy: string, ordered: readonly string[]) {
+  return `${DRAW_VERSION}|${slot}|${publicEntropy.trim()}|${ordered.join(',')}`;
+}
+
 /** Deterministic, unbiased pick (rejection sampling on 64-bit chunks). */
-export function draw({ seed, publicEntropy, roundNumber, eligible }: DrawInput): DrawResult {
-  if (eligible.length === 0) throw new Error('no eligible members');
-  if (new Set(eligible).size !== eligible.length) throw new Error('duplicate member ids');
+export function draw({ seed, publicEntropy, slot, eligible }: DrawInput): DrawResult {
+  if (eligible.length === 0) throw new Error('no eligible tickets');
+  if (new Set(eligible).size !== eligible.length) throw new Error('duplicate ticket codes');
   const ordered = [...eligible].sort();
   const n = BigInt(ordered.length);
   const limit = TWO_64 - (TWO_64 % n); // values >= limit would bias the modulo
-  const message = `arisan-v1|${roundNumber}|${publicEntropy.trim()}|${ordered.join(',')}`;
+  const message = drawMessage(slot, publicEntropy, ordered);
 
   for (let attempt = 0; attempt < 1000; attempt++) {
     const digest = createHmac('sha256', seed).update(`${message}|${attempt}`).digest('hex');

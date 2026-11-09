@@ -186,7 +186,7 @@ export class GroupsService {
       const result = draw({
         seed: r.seed,
         publicEntropy: dto.publicEntropy,
-        roundNumber: number,
+        slot: number,
         eligible: eligible.map((m) => m.id),
       });
       const { fee, net } = payout(group.contribution, all.length, group.adminFeePct);
@@ -225,7 +225,7 @@ export class GroupsService {
       seed: r.seed,
       commitment: r.commitment,
       publicEntropy: r.publicEntropy,
-      roundNumber: number,
+      slot: number,
       eligible: eligible.map((m) => m.id),
       claimedWinner: r.winnerId,
     });

@@ -1,29 +1,29 @@
-import { commitmentOf, draw, newSeed, verify } from './draw';
+import { commitmentOf, DRAW_VERSION, draw, drawMessage, newSeed, verify } from './draw';
 
-const ids = ['m-c', 'm-a', 'm-e', 'm-b', 'm-d'];
+const ids = ['T0003', 'T0001', 'T0005', 'T0002', 'T0004'];
 
 describe('draw', () => {
   it('is deterministic and independent of input order', () => {
-    const a = draw({ seed: 's', publicEntropy: '17 42 8', roundNumber: 3, eligible: ids });
+    const a = draw({ seed: 's', publicEntropy: '17 42 8', slot: 3, eligible: ids });
     const b = draw({
       seed: 's',
       publicEntropy: ' 17 42 8 ',
-      roundNumber: 3,
+      slot: 3,
       eligible: [...ids].reverse(),
     });
     expect(b.winner).toBe(a.winner);
-    expect(a.ordered).toEqual(['m-a', 'm-b', 'm-c', 'm-d', 'm-e']);
+    expect(a.ordered).toEqual(['T0001', 'T0002', 'T0003', 'T0004', 'T0005']);
     expect(a.ordered[a.index]).toBe(a.winner);
   });
 
-  it('changes with seed, entropy and round', () => {
-    const base = { seed: 'seed', publicEntropy: 'x', roundNumber: 1, eligible: ids };
+  it('changes with seed, entropy and slot', () => {
+    const base = { seed: 'seed', publicEntropy: 'x', slot: 1, eligible: ids };
     const winners = new Set<string>();
     for (let i = 0; i < 40; i++) {
       winners.add(draw({ ...base, publicEntropy: `entropy-${i}` }).winner);
     }
     expect(winners.size).toBe(ids.length);
-    expect(draw(base).digest).not.toBe(draw({ ...base, roundNumber: 2 }).digest);
+    expect(draw(base).digest).not.toBe(draw({ ...base, slot: 2 }).digest);
     expect(draw(base).digest).not.toBe(draw({ ...base, seed: 'other' }).digest);
   });
 
@@ -31,7 +31,7 @@ describe('draw', () => {
     const counts = new Map<string, number>();
     const runs = 5000;
     for (let i = 0; i < runs; i++) {
-      const { winner } = draw({ seed: `s${i}`, publicEntropy: 'e', roundNumber: 1, eligible: ids });
+      const { winner } = draw({ seed: `s${i}`, publicEntropy: 'e', slot: 1, eligible: ids });
       counts.set(winner, (counts.get(winner) ?? 0) + 1);
     }
     for (const id of ids) {
@@ -42,16 +42,43 @@ describe('draw', () => {
   });
 
   it('rejects empty or duplicate eligibility lists', () => {
-    expect(() => draw({ seed: 's', publicEntropy: '', roundNumber: 1, eligible: [] })).toThrow();
-    expect(() =>
-      draw({ seed: 's', publicEntropy: '', roundNumber: 1, eligible: ['a', 'a'] }),
-    ).toThrow(/duplicate/);
+    expect(() => draw({ seed: 's', publicEntropy: '', slot: 1, eligible: [] })).toThrow();
+    expect(() => draw({ seed: 's', publicEntropy: '', slot: 1, eligible: ['a', 'a'] })).toThrow(
+      /duplicate/,
+    );
   });
 
-  it('single eligible member always wins', () => {
-    expect(draw({ seed: 'q', publicEntropy: 'z', roundNumber: 9, eligible: ['last'] }).winner).toBe(
+  it('a single eligible ticket always wins', () => {
+    expect(draw({ seed: 'q', publicEntropy: 'z', slot: 9, eligible: ['last'] }).winner).toBe(
       'last',
     );
+  });
+});
+
+describe('drawMessage', () => {
+  it('is versioned, trims entropy and lists tickets in order', () => {
+    expect(drawMessage(2, '  17 42 ', ['T0001', 'T0002'])).toBe(
+      `${DRAW_VERSION}|2|17 42|T0001,T0002`,
+    );
+  });
+});
+
+describe('weighted entries', () => {
+  it('more tickets means proportionally more chances', () => {
+    // participant A holds 3 of the 4 tickets
+    const tickets = ['A-1', 'A-2', 'A-3', 'B-1'];
+    let a = 0;
+    const runs = 4000;
+    for (let i = 0; i < runs; i++) {
+      if (
+        draw({ seed: `w${i}`, publicEntropy: 'e', slot: 1, eligible: tickets }).winner.startsWith(
+          'A',
+        )
+      )
+        a++;
+    }
+    expect(a / runs).toBeGreaterThan(0.71);
+    expect(a / runs).toBeLessThan(0.79);
   });
 });
 
@@ -66,7 +93,7 @@ describe('commit–reveal', () => {
 
   it('verify detects a swapped seed or a forged winner', () => {
     const seed = newSeed();
-    const input = { seed, publicEntropy: 'rt05', roundNumber: 1, eligible: ids };
+    const input = { seed, publicEntropy: 'rt05', slot: 1, eligible: ids };
     const { winner } = draw(input);
     const commitment = commitmentOf(seed);
     expect(verify({ ...input, commitment, claimedWinner: winner }).valid).toBe(true);

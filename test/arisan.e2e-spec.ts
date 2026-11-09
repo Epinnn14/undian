@@ -183,7 +183,7 @@ describe('Arisan API (e2e, in-memory Postgres via PGlite)', () => {
 
     // recompute by hand, exactly as documented, without using the app's code
     const { seed, eligibleInOrder } = v.inputs;
-    const message = `arisan-v1|1|17 08 45|${eligibleInOrder.join(',')}`;
+    const message = `undian-v1|1|17 08 45|${eligibleInOrder.join(',')}`;
     const digest = createHmac('sha256', seed).update(`${message}|0`).digest('hex');
     const index = Number(BigInt(`0x${digest.slice(0, 16)}`) % BigInt(eligibleInOrder.length));
     expect(eligibleInOrder[index]).toBe(drawn.winner.id);

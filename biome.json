@@ -1,6 +1,16 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "files": { "includes": ["src/**", "test/**", "*.ts", "*.json", "!package-lock.json", "!drizzle/meta/**"] },
+  "files": {
+    "includes": [
+      "src/**",
+      "test/**",
+      "scripts/**",
+      "*.ts",
+      "*.json",
+      "!package-lock.json",
+      "!drizzle/meta"
+    ]
+  },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
   "javascript": {
     "formatter": { "quoteStyle": "single", "trailingCommas": "all" },
@@ -8,7 +18,7 @@
   },
   "linter": {
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "style": { "useImportType": "off" }
     }
   }

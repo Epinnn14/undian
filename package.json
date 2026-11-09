@@ -1,13 +1,13 @@
 {
   "name": "arisan",
   "version": "0.1.0",
-  "description": "Arisan (rotating savings group) API with a verifiable commit-reveal draw — NestJS, Drizzle ORM, PGlite",
+  "description": "Arisan (rotating savings group) API with a verifiable commit-reveal draw \u2014 NestJS, Drizzle ORM, PGlite",
   "scripts": {
     "build": "tsc -p tsconfig.build.json && node -e \"require('fs').cpSync('drizzle','dist/drizzle',{recursive:true})\"",
     "start": "node dist/main.js",
     "dev": "tsx watch src/main.ts",
-    "test": "jest",
-    "test:cov": "jest --coverage",
+    "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning node_modules/jest/bin/jest.js",
+    "test:cov": "npm test -- --coverage",
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "tsc --noEmit -p tsconfig.json",
